@@ -164,5 +164,14 @@ def main(num_epochs=10, learning_rate=0.001, batch_size=16, show_plots=True):
         plt.show()
 
 
+def root_mean_squared_price_error(actual_prices, predicted_prices):
+    """RMSE in dollars between two price series of the same length."""
+    actual = np.asarray(actual_prices, dtype=float)
+    predicted = np.asarray(predicted_prices, dtype=float)
+    if actual.shape != predicted.shape:
+        raise ValueError("price series must have the same shape")
+    return float(np.sqrt(np.mean((actual - predicted) ** 2)))
+
+
 if __name__ == "__main__":
     main()
