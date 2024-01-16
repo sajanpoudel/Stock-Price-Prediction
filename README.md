@@ -12,7 +12,7 @@ This project is about predicting time series data using an LSTM model. The data 
 
 ## Data Preparation
 
-The data is loaded from a CSV file named 'data-amz'. The 'Date' and 'Close' columns are extracted and the 'Date' column is converted to datetime format. The data is then plotted to visualize the closing prices over time.
+The data is loaded from a CSV file named 'data-amz.csv'. The 'Date' and 'Close' columns are extracted and the 'Date' column is converted to datetime format. The data is then plotted to visualize the closing prices over time.
 
 A function named `prepare_dataframe_for_lstm` is used to prepare the data for the LSTM model. This function shifts the 'Close' column by a specified number of steps and adds these shifted columns to the dataframe.
 
