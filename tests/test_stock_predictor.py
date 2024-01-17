@@ -5,6 +5,7 @@ import torch
 from stock_predictor import (
     LOOKBACK,
     LSTM,
+    root_mean_squared_price_error,
     TimeSeriesDataset,
     load_closing_prices,
     prepare_dataframe_for_lstm,
