@@ -86,3 +86,7 @@ def test_scaled_targets_stay_inside_the_scaler_range():
 
 def test_price_error_is_zero_for_identical_series():
     assert root_mean_squared_price_error([1, 2, 3], [1, 2, 3]) == 0.0
+
+
+def test_price_error_is_in_price_units():
+    assert root_mean_squared_price_error([10, 10], [13, 7]) == 3.0
