@@ -27,3 +27,22 @@ def prepare_dataframe_for_lstm(df, n_steps):
 
     df.dropna(inplace=True)
     return df
+
+
+def split_data(shifted_df, lookback=LOOKBACK, train_fraction=TRAIN_FRACTION):
+    """Scale to [-1, 1] and split into train and test arrays shaped for an LSTM.
+
+    Returns X_train, y_train, X_test, y_test and the fitted scaler.
+    """
+    scaler = MinMaxScaler(feature_range=(-1, 1))
+    scaled = scaler.fit_transform(shifted_df.to_numpy())
+
+    X = dc(np.flip(scaled[:, 1:], axis=1))
+    y = scaled[:, 0]
+
+    split_index = int(len(X) * train_fraction)
+    X_train = X[:split_index].reshape((-1, lookback, 1))
+    X_test = X[split_index:].reshape((-1, lookback, 1))
+    y_train = y[:split_index].reshape((-1, 1))
+    y_test = y[split_index:].reshape((-1, 1))
+    return X_train, y_train, X_test, y_test, scaler
