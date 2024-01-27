@@ -79,3 +79,40 @@ class LSTM(nn.Module):
 
         out, _ = self.lstm(x, (h0, c0))
         return self.fc(out[:, -1, :])
+
+
+def train_one_epoch(model, loader, loss_function, optimizer, device, epoch):
+    model.train(True)
+    print(f'Epoch: {epoch + 1}')
+    running_loss = 0.0
+
+    for batch_index, (x_batch, y_batch) in enumerate(loader):
+        x_batch, y_batch = x_batch.to(device), y_batch.to(device)
+
+        output = model(x_batch)
+        loss = loss_function(output, y_batch)
+        running_loss += loss.item()
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if batch_index % 100 == 99:  # print every 100 batches
+            print('Batch {0}, Loss: {1:.3f}'.format(batch_index + 1, running_loss / 100))
+            running_loss = 0.0
+    print()
+
+
+def validate_one_epoch(model, loader, loss_function, device):
+    model.train(False)
+    running_loss = 0.0
+
+    for x_batch, y_batch in loader:
+        x_batch, y_batch = x_batch.to(device), y_batch.to(device)
+
+        with torch.no_grad():
+            running_loss += loss_function(model(x_batch), y_batch).item()
+
+    print('Val Loss: {0:.3f}'.format(running_loss / len(loader)))
+    print('***************************************************')
+    print()
