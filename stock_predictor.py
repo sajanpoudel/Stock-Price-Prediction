@@ -116,3 +116,48 @@ def validate_one_epoch(model, loader, loss_function, device):
     print('Val Loss: {0:.3f}'.format(running_loss / len(loader)))
     print('***************************************************')
     print()
+
+
+def to_price(values, scaler, lookback=LOOKBACK):
+    """Undo the scaling of the Close column, which is column 0 of the scaled data."""
+    dummies = np.zeros((len(values), lookback + 1))
+    dummies[:, 0] = values.flatten()
+    return scaler.inverse_transform(dummies)[:, 0]
+
+
+def main(num_epochs=10, learning_rate=0.001, batch_size=16, show_plots=True):
+    device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+
+    shifted_df = prepare_dataframe_for_lstm(load_closing_prices(), LOOKBACK)
+    X_train, y_train, X_test, y_test, scaler = split_data(shifted_df)
+
+    X_train, y_train = torch.tensor(X_train).float(), torch.tensor(y_train).float()
+    X_test, y_test = torch.tensor(X_test).float(), torch.tensor(y_test).float()
+
+    train_loader = DataLoader(TimeSeriesDataset(X_train, y_train), batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(TimeSeriesDataset(X_test, y_test), batch_size=batch_size, shuffle=False)
+
+    model = LSTM(1, 4, 1).to(device)
+    loss_function = nn.MSELoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
+    for epoch in range(num_epochs):
+        train_one_epoch(model, train_loader, loss_function, optimizer, device, epoch)
+        validate_one_epoch(model, test_loader, loss_function, device)
+
+    if show_plots:
+        import matplotlib.pyplot as plt
+
+        with torch.no_grad():
+            test_predictions = model(X_test.to(device)).cpu().numpy()
+
+        plt.plot(to_price(y_test.numpy(), scaler), label='Actual Close')
+        plt.plot(to_price(test_predictions, scaler), label='Predicted Close')
+        plt.xlabel('Day')
+        plt.ylabel('Close')
+        plt.legend()
+        plt.show()
+
+
+if __name__ == '__main__':
+    main()
