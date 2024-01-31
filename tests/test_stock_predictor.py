@@ -90,3 +90,10 @@ def test_price_error_is_zero_for_identical_series():
 
 def test_price_error_is_in_price_units():
     assert root_mean_squared_price_error([10, 10], [13, 7]) == 3.0
+
+
+def test_price_error_rejects_different_shapes():
+    import pytest
+
+    with pytest.raises(ValueError):
+        root_mean_squared_price_error([1, 2], [1])
