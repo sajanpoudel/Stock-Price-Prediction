@@ -34,4 +34,18 @@ The function `validate_one_epoch` is used to validate the model on the testing d
 
 ## Usage
 
-To use this project, run the provided Python script. The script will load the data, prepare it for the LSTM model, train the model, and then validate the model on the testing data.
+Install the dependencies and run the script. It loads the data, prepares it for the LSTM model, trains the model, validates it on the testing data and plots the predicted closing prices against the actual ones.
+
+```
+pip install -r requirements.txt
+python stock_predictor.py
+```
+
+The same steps are available step by step in `Stock_Predictor.ipynb`.
+
+## Tests
+
+```
+pip install pytest
+pytest
+```
