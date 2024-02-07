@@ -1,6 +1,12 @@
 import pandas as pd
 
-from stock_predictor import LOOKBACK, load_closing_prices, prepare_dataframe_for_lstm, split_data, to_price
+from stock_predictor import (
+    LOOKBACK,
+    load_closing_prices,
+    prepare_dataframe_for_lstm,
+    split_data,
+    to_price,
+)
 
 
 def test_prepare_adds_lag_columns():
