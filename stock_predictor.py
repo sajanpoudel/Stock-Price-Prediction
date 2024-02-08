@@ -1,4 +1,5 @@
 """Predict Amazon closing prices with an LSTM, using the same steps as the notebook."""
+
 from copy import deepcopy as dc
 
 import numpy as np
@@ -8,25 +9,25 @@ import torch.nn as nn
 from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import DataLoader, Dataset
 
-DATA_FILE = 'data-amz.csv'
+DATA_FILE = "data-amz.csv"
 LOOKBACK = 7
 TRAIN_FRACTION = 0.95
 
 
 def load_closing_prices(path=DATA_FILE):
     """Read the csv and keep the Date and Close columns."""
-    data = pd.read_csv(path)[['Date', 'Close']]
-    data['Date'] = pd.to_datetime(data['Date'])
+    data = pd.read_csv(path)[["Date", "Close"]]
+    data["Date"] = pd.to_datetime(data["Date"])
     return data
 
 
 def prepare_dataframe_for_lstm(df, n_steps):
     """Add Close(t-1) ... Close(t-n_steps) columns built from shifted closing prices."""
     df = dc(df)
-    df.set_index('Date', inplace=True)
+    df.set_index("Date", inplace=True)
 
     for i in range(1, n_steps + 1):
-        df[f'Close(t-{i})'] = df['Close'].shift(i)
+        df[f"Close(t-{i})"] = df["Close"].shift(i)
 
     df.dropna(inplace=True)
     return df
@@ -83,7 +84,7 @@ class LSTM(nn.Module):
 
 def train_one_epoch(model, loader, loss_function, optimizer, device, epoch):
     model.train(True)
-    print(f'Epoch: {epoch + 1}')
+    print(f"Epoch: {epoch + 1}")
     running_loss = 0.0
 
     for batch_index, (x_batch, y_batch) in enumerate(loader):
@@ -98,7 +99,7 @@ def train_one_epoch(model, loader, loss_function, optimizer, device, epoch):
         optimizer.step()
 
         if batch_index % 100 == 99:  # print every 100 batches
-            print('Batch {0}, Loss: {1:.3f}'.format(batch_index + 1, running_loss / 100))
+            print("Batch {0}, Loss: {1:.3f}".format(batch_index + 1, running_loss / 100))
             running_loss = 0.0
     print()
 
@@ -113,8 +114,8 @@ def validate_one_epoch(model, loader, loss_function, device):
         with torch.no_grad():
             running_loss += loss_function(model(x_batch), y_batch).item()
 
-    print('Val Loss: {0:.3f}'.format(running_loss / len(loader)))
-    print('***************************************************')
+    print("Val Loss: {0:.3f}".format(running_loss / len(loader)))
+    print("***************************************************")
     print()
 
 
@@ -126,7 +127,7 @@ def to_price(values, scaler, lookback=LOOKBACK):
 
 
 def main(num_epochs=10, learning_rate=0.001, batch_size=16, show_plots=True):
-    device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
     shifted_df = prepare_dataframe_for_lstm(load_closing_prices(), LOOKBACK)
     X_train, y_train, X_test, y_test, scaler = split_data(shifted_df)
@@ -134,8 +135,12 @@ def main(num_epochs=10, learning_rate=0.001, batch_size=16, show_plots=True):
     X_train, y_train = torch.tensor(X_train).float(), torch.tensor(y_train).float()
     X_test, y_test = torch.tensor(X_test).float(), torch.tensor(y_test).float()
 
-    train_loader = DataLoader(TimeSeriesDataset(X_train, y_train), batch_size=batch_size, shuffle=True)
-    test_loader = DataLoader(TimeSeriesDataset(X_test, y_test), batch_size=batch_size, shuffle=False)
+    train_loader = DataLoader(
+        TimeSeriesDataset(X_train, y_train), batch_size=batch_size, shuffle=True
+    )
+    test_loader = DataLoader(
+        TimeSeriesDataset(X_test, y_test), batch_size=batch_size, shuffle=False
+    )
 
     model = LSTM(1, 4, 1).to(device)
     loss_function = nn.MSELoss()
@@ -151,13 +156,13 @@ def main(num_epochs=10, learning_rate=0.001, batch_size=16, show_plots=True):
         with torch.no_grad():
             test_predictions = model(X_test.to(device)).cpu().numpy()
 
-        plt.plot(to_price(y_test.numpy(), scaler), label='Actual Close')
-        plt.plot(to_price(test_predictions, scaler), label='Predicted Close')
-        plt.xlabel('Day')
-        plt.ylabel('Close')
+        plt.plot(to_price(y_test.numpy(), scaler), label="Actual Close")
+        plt.plot(to_price(test_predictions, scaler), label="Predicted Close")
+        plt.xlabel("Day")
+        plt.ylabel("Close")
         plt.legend()
         plt.show()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
