@@ -173,5 +173,10 @@ def root_mean_squared_price_error(actual_prices, predicted_prices):
     return float(np.sqrt(np.mean((actual - predicted) ** 2)))
 
 
+def save_model(model, path):
+    """Write the weights of the model to path."""
+    torch.save(model.state_dict(), path)
+
+
 if __name__ == "__main__":
     main()
