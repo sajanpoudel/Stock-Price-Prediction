@@ -31,3 +31,9 @@ def test_to_price_restores_original_close():
     restored = to_price(y_train, scaler)
     expected = shifted["Close"].to_numpy()[: len(restored)]
     assert abs(restored - expected).max() < 1e-6
+
+
+def test_split_keeps_train_and_test_in_time_order():
+    shifted = prepare_dataframe_for_lstm(load_closing_prices(), LOOKBACK)
+    X_train, y_train, X_test, y_test, _ = split_data(shifted)
+    assert len(X_train) + len(X_test) == len(shifted)
