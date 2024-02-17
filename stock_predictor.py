@@ -178,5 +178,13 @@ def save_model(model, path):
     torch.save(model.state_dict(), path)
 
 
+def load_model(path, hidden_size=4, num_layers=1):
+    """Create an LSTM and load weights saved with save_model()."""
+    model = LSTM(1, hidden_size, num_layers)
+    model.load_state_dict(torch.load(path, map_location="cpu"))
+    model.eval()
+    return model
+
+
 if __name__ == "__main__":
     main()
