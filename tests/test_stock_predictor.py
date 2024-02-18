@@ -37,3 +37,9 @@ def test_split_keeps_train_and_test_in_time_order():
     shifted = prepare_dataframe_for_lstm(load_closing_prices(), LOOKBACK)
     X_train, y_train, X_test, y_test, _ = split_data(shifted)
     assert len(X_train) + len(X_test) == len(shifted)
+
+
+def test_load_closing_prices_has_sorted_unique_dates():
+    data = load_closing_prices()
+    assert data['Date'].is_monotonic_increasing
+    assert data['Date'].is_unique
