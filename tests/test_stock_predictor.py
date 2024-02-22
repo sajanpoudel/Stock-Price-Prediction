@@ -43,3 +43,7 @@ def test_load_closing_prices_has_sorted_unique_dates():
     data = load_closing_prices()
     assert data['Date'].is_monotonic_increasing
     assert data['Date'].is_unique
+
+
+def test_closing_prices_are_positive():
+    assert (load_closing_prices()['Close'] > 0).all()
