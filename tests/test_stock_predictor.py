@@ -1,4 +1,6 @@
+import numpy as np
 import pandas as pd
+import torch
 
 from stock_predictor import (
     LOOKBACK,
