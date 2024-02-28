@@ -61,3 +61,9 @@ def test_dataset_returns_matching_rows():
     features, target = dataset[2]
     assert features.shape == (3, 1)
     assert target.item() == 2.0
+
+
+def test_lstm_outputs_one_value_per_sample():
+    model = LSTM(1, 4, 1)
+    out = model(torch.zeros(5, LOOKBACK, 1))
+    assert out.shape == (5, 1)
