@@ -51,3 +51,13 @@ def test_load_closing_prices_has_sorted_unique_dates():
 
 def test_closing_prices_are_positive():
     assert (load_closing_prices()['Close'] > 0).all()
+
+
+def test_dataset_returns_matching_rows():
+    X = torch.arange(12, dtype=torch.float32).reshape(4, 3, 1)
+    y = torch.arange(4, dtype=torch.float32).reshape(4, 1)
+    dataset = TimeSeriesDataset(X, y)
+    assert len(dataset) == 4
+    features, target = dataset[2]
+    assert features.shape == (3, 1)
+    assert target.item() == 2.0
