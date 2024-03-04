@@ -67,3 +67,11 @@ def test_lstm_outputs_one_value_per_sample():
     model = LSTM(1, 4, 1)
     out = model(torch.zeros(5, LOOKBACK, 1))
     assert out.shape == (5, 1)
+
+
+def test_lstm_is_deterministic_in_eval_mode():
+    torch.manual_seed(0)
+    model = LSTM(1, 4, 1).eval()
+    x = torch.rand(2, LOOKBACK, 1)
+    with torch.no_grad():
+        assert torch.equal(model(x), model(x))
