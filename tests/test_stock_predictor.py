@@ -75,3 +75,9 @@ def test_lstm_is_deterministic_in_eval_mode():
     x = torch.rand(2, LOOKBACK, 1)
     with torch.no_grad():
         assert torch.equal(model(x), model(x))
+
+
+def test_scaled_targets_stay_inside_the_scaler_range():
+    shifted = prepare_dataframe_for_lstm(load_closing_prices(), LOOKBACK)
+    _, y_train, _, y_test, _ = split_data(shifted)
+    assert np.min(y_train) >= -1.0 and np.max(y_train) <= 1.0
