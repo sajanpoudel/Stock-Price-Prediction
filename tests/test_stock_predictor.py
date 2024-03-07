@@ -99,3 +99,14 @@ def test_price_error_rejects_different_shapes():
 
     with pytest.raises(ValueError):
         root_mean_squared_price_error([1, 2], [1])
+
+
+def test_saved_weights_load_into_a_new_model(tmp_path):
+    torch.manual_seed(1)
+    model = LSTM(1, 4, 1).eval()
+    path = tmp_path / "model.pt"
+    save_model(model, path)
+    loaded = load_model(path)
+    x = torch.rand(3, LOOKBACK, 1)
+    with torch.no_grad():
+        assert torch.allclose(model(x), loaded(x))
