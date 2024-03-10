@@ -110,3 +110,10 @@ def test_saved_weights_load_into_a_new_model(tmp_path):
     x = torch.rand(3, LOOKBACK, 1)
     with torch.no_grad():
         assert torch.allclose(model(x), loaded(x))
+
+
+def test_loading_a_missing_file_fails(tmp_path):
+    import pytest
+
+    with pytest.raises(FileNotFoundError):
+        load_model(tmp_path / "missing.pt")
