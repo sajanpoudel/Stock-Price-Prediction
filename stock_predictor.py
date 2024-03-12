@@ -186,5 +186,19 @@ def load_model(path, hidden_size=4, num_layers=1):
     return model
 
 
+def predict_next_close(model, scaler, recent_closes, lookback=LOOKBACK):
+    """Predict the next closing price from the last `lookback` closes (oldest first)."""
+    closes = list(recent_closes)
+    if len(closes) < lookback:
+        raise ValueError(f"need at least {lookback} closing prices")
+    window = np.zeros((1, lookback + 1))
+    window[0, 1:] = closes[-lookback:][::-1]  # the model reads the newest close first
+    scaled = scaler.transform(window)[0, 1:]
+    features = np.flip(scaled).copy().reshape(1, lookback, 1)
+    with torch.no_grad():
+        output = model(torch.tensor(features).float()).numpy()
+    return float(to_price(output, scaler, lookback)[0])
+
+
 if __name__ == "__main__":
     main()
