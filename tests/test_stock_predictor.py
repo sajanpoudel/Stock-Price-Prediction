@@ -7,6 +7,7 @@ from stock_predictor import (
     LSTM,
     root_mean_squared_price_error,
     TimeSeriesDataset,
+    predict_next_close,
     load_model,
     save_model,
     load_closing_prices,
