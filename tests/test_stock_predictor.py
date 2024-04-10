@@ -118,3 +118,11 @@ def test_loading_a_missing_file_fails(tmp_path):
 
     with pytest.raises(FileNotFoundError):
         load_model(tmp_path / "missing.pt")
+
+
+def test_predict_next_close_returns_a_price():
+    shifted = prepare_dataframe_for_lstm(load_closing_prices(), LOOKBACK)
+    _, _, _, _, scaler = split_data(shifted)
+    closes = list(shifted["Close"].tail(LOOKBACK))
+    price = predict_next_close(LSTM(1, 4, 1).eval(), scaler, closes)
+    assert isinstance(price, float)
