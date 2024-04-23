@@ -126,3 +126,12 @@ def test_predict_next_close_returns_a_price():
     closes = list(shifted["Close"].tail(LOOKBACK))
     price = predict_next_close(LSTM(1, 4, 1).eval(), scaler, closes)
     assert isinstance(price, float)
+
+
+def test_predict_next_close_needs_enough_history():
+    import pytest
+
+    shifted = prepare_dataframe_for_lstm(load_closing_prices(), LOOKBACK)
+    _, _, _, _, scaler = split_data(shifted)
+    with pytest.raises(ValueError):
+        predict_next_close(LSTM(1, 4, 1).eval(), scaler, [1.0, 2.0])
