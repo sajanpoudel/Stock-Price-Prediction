@@ -126,7 +126,7 @@ def to_price(values, scaler, lookback=LOOKBACK):
     return scaler.inverse_transform(dummies)[:, 0]
 
 
-def main(num_epochs=10, learning_rate=0.001, batch_size=16, show_plots=True):
+def main(num_epochs=10, learning_rate=0.001, batch_size=16, show_plots=True, save_path=None):
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
     shifted_df = prepare_dataframe_for_lstm(load_closing_prices(), LOOKBACK)
@@ -149,6 +149,9 @@ def main(num_epochs=10, learning_rate=0.001, batch_size=16, show_plots=True):
     for epoch in range(num_epochs):
         train_one_epoch(model, train_loader, loss_function, optimizer, device, epoch)
         validate_one_epoch(model, test_loader, loss_function, device)
+
+    if save_path:
+        save_model(model, save_path)
 
     if show_plots:
         import matplotlib.pyplot as plt
