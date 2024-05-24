@@ -1,5 +1,6 @@
 """Predict Amazon closing prices with an LSTM, using the same steps as the notebook."""
 
+import argparse
 from copy import deepcopy as dc
 
 import numpy as np
@@ -204,4 +205,17 @@ def predict_next_close(model, scaler, recent_closes, lookback=LOOKBACK):
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Train the LSTM on the Amazon closing prices.")
+    parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--learning-rate", type=float, default=0.001)
+    parser.add_argument("--batch-size", type=int, default=16)
+    parser.add_argument("--save", help="write the trained weights to this file")
+    parser.add_argument("--no-plots", action="store_true", help="do not open the plot window")
+    args = parser.parse_args()
+    main(
+        num_epochs=args.epochs,
+        learning_rate=args.learning_rate,
+        batch_size=args.batch_size,
+        show_plots=not args.no_plots,
+        save_path=args.save,
+    )
