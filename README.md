@@ -49,3 +49,11 @@ The same steps are available step by step in `Stock_Predictor.ipynb`.
 pip install pytest
 pytest
 ```
+
+## Command line
+
+```
+python stock_predictor.py --epochs 20 --learning-rate 0.001 --batch-size 16 --save model.pt --no-plots
+```
+
+`load_model("model.pt")` restores the weights and `predict_next_close(model, scaler, recent_closes)` turns the last seven closing prices into a forecast for the next day.
